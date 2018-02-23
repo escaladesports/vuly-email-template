@@ -1,0 +1,19 @@
+{
+	"presets": [
+		"es2015",
+		"stage-3"
+	],
+	"plugins": [
+		["module-resolver", {
+			"root": ["."],
+			"alias": {
+				"components": "./src/components",
+				"templates": "./src/templates",
+				"pages": "./src/pages",
+				"utils": "./utils"
+			},
+			"cwd": "babelrc"
+		}],
+		"transform-runtime"
+	]
+}
