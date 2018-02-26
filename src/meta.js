@@ -1,5 +1,5 @@
 module.exports = {
-	title: 'Vuly Email Template',
-	description: 'Vuly Email Template',
-	siteUrl: 'https://vuly-email-template.netlify.com',
+	title: 'Boilerplate Title',
+	description: 'Boilerplate Description',
+	siteUrl: 'https://gatsby-boilerplate.netlify.com',
 }

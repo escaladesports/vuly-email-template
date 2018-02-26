@@ -1,7 +1,7 @@
 import glob from 'globby'
 import { remove, readFile, outputFile } from 'fs-extra'
 import textVersion from 'textversionjs'
-import { parse } from 'path'
+import { parse, join } from 'path'
 import posthtml from 'posthtml'
 import removeTags from 'posthtml-remove-tags'
 import doctype from 'posthtml-doctype'
@@ -10,6 +10,8 @@ import beautify from 'posthtml-beautify'
 import stripComments from 'strip-html-comments'
 import removeAttributes from 'posthtml-remove-attributes'
 import cheerio from 'cheerio'
+
+import custom from './posthtml-custom'
 
 async function removeUnusedFiles(){
 	let paths = await glob('public/**/*.{js,css,json,map}')
@@ -23,9 +25,18 @@ async function createTextFiles(contents){
 	let promises = []
 	for(let path in contents){
 		let html = contents[path]
-		let text = textVersion(html)
+		let text = textVersion(html, {
+			linkProcess: (href, linkText) => {
+				if(href.indexOf('mailto:') === 0 || href.indexOf('tel:') === 0){
+					return linkText
+				}
+				return `${linkText} (${href})`
+			},
+			imgProcess: (src, alt) => ``,
+		})
 		path = parse(path)
 		path = `${path.dir}/${path.name}.txt`
+		console.log(path)
 		promises.push(outputFile(path, text))
 	}
 	await Promise.all(promises)
@@ -47,34 +58,7 @@ async function emailifyHtml(contents){
 				'data-react-checksum',
 				'data-react-helmet',
 			]))
-			.process(html)
-		html = html.html
-
-		// Add required CSS/XML
-		let $ = cheerio.load(html)
-		$('html').attr('xmlns:v', 'urn:schemas-microsoft-com:vml')
-			.attr('xmlns:o', 'urn:schemas-microsoft-com:office:office')
-		$('head').append(`
-			<style type="text/css">
-				#__bodyTable__ {
-					margin: 0;
-					padding: 0;
-					width: 100% !important;
-				}
-			</style>
-			<!--[if gte mso 9]>
-				<xml>
-					<o:OfficeDocumentSettings>
-						<o:AllowPNG />
-						<o:PixelsPerInch>96</o:PixelsPerInch>
-					</o:OfficeDocumentSettings>
-				</xml>
-			<![endif]-->
-		`)
-		html = $.html()
-
-		// Clean up
-		html = await posthtml()
+			.use(custom())
 			.use(beautify({
 				rules: { indent: 'tab' }
 			}))
@@ -82,6 +66,7 @@ async function emailifyHtml(contents){
 		html = html.html
 
 		promises.push(outputFile(path, html))
+		promises.push(outputFile(`${path}.txt`, html))
 	}
 	await Promise.all(promises)
 }

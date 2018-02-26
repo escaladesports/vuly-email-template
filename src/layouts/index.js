@@ -1,12 +1,14 @@
 import React from 'react'
 
+import Block from '../components/block'
+import Header from '../components/header'
+
 export default class Template extends React.Component {
 	render() {
 		return (
-			<div>
-				<p>Header</p>
+			<Block padding='20'>
+				<Header />
 				{this.props.children()}
-				<p>Footer</p>
 				<style jsx global>{`
 					html{
 						height: 100%;
@@ -32,8 +34,13 @@ export default class Template extends React.Component {
 						background-color: #333;
 						color: #fff;
 					}
+					a{
+						color: #f15a01;
+					}
 				`}</style>
-			</div>
+			</Block>
 		)
 	}
 }
+
+

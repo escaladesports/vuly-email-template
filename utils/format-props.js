@@ -2,6 +2,7 @@ import format from 'utils/format-side-numbers'
 
 export default function(props){
 	props = {
+		style: {},
 		...props
 	}
 	if(props.spacing){
@@ -9,18 +10,22 @@ export default function(props){
 		delete props.spacing
 	}
 
-	if (props.verticalAlign) {
+	if ('verticalAlign' in props) {
 		props.valign = props.verticalAlign
+		props.style.verticalAlign = props.verticalAlign
 		delete props.verticalAlign
 	}
-	if (props.horizontalAlign) {
+	if('align' in props){
+		props.horizontalAlign = props.align
+		delete props.align
+	}
+	if ('horizontalAlign' in props) {
 		props.align = props.horizontalAlign
+		props.style.textAlign = props.horizontalAlign
 		delete props.horizontalAlign
 	}
-	if (props.padding && !props.style) {
-		props.style = {
-			padding: format(props.padding)
-		}
+	if (props.padding) {
+		props.style.padding = format(props.padding)
 	}
 	return props
 }
