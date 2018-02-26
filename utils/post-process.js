@@ -1,7 +1,7 @@
 import glob from 'globby'
 import { remove, readFile, outputFile } from 'fs-extra'
 import textVersion from 'textversionjs'
-import { parse, join } from 'path'
+import { parse } from 'path'
 import posthtml from 'posthtml'
 import removeTags from 'posthtml-remove-tags'
 import doctype from 'posthtml-doctype'
